@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="80" height="80" viewBox="0 0 80 80">
+  <!-- Orange Rounded Square -->
+  <rect x="0" y="0" rx="15" ry="15" width="80" height="80" fill="#FF7A00"></rect>
+  
+  <!-- Camera Lens -->
+  <circle cx="40" cy="40" r="15" fill="white"></circle>
+  
+  <!-- Small Circle -->
+  <circle cx="58" cy="22" r="5" fill="white"></circle>
+</svg>
