@@ -18,8 +18,6 @@ app.use(
   })
 );
 
-app.options("*", cors());
-
 await connectDB();
 
 app.use("/api/user", userRouter);
