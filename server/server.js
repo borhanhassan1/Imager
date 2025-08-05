@@ -9,11 +9,17 @@ const PORT = process.env.PORT || 4000;
 const app = express();
 
 app.use(express.json());
+
 app.use(
   cors({
-    Credentials: true,
+    origin: "https://imager1.vercel.app",
+    methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+    credentials: true,
   })
 );
+
+app.options("*", cors());
+
 await connectDB();
 
 app.use("/api/user", userRouter);
