@@ -1,6 +1,6 @@
 import Stripe from "stripe";
 const stripe = new Stripe(
-  "pk_test_51RsrD4JYOW6ad8gI5TdMSefK1hcFQ4WO8VvrxheC1jFJAqdhpwjfoweuJKX9QARrP6vF6sXxHih4qMEAAYRhkqdS00j4N0VW0i"
+  "sk_test_51RsrD4JYOW6ad8gIpYU9oxhMRlo1KWqgeOGGxURmLqePJlmN9wPOsJhm2go4bIXTGPOMqVhqx4lNN4TOrk57KiVA00YkrDdaNb"
 );
 import bodyParser from "body-parser";
 
