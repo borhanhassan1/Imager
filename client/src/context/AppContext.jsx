@@ -52,7 +52,8 @@ const AppContextProvider = (props)=>{
         setUser(null);
     }
     const checkout=async ()=>{
-        await axios.post(backendUrl+'/api/stripe/checkout');
+        const {data}=await axios.post(backendUrl+'/api/stripe/checkout');
+         window.location.href = data.url;
     }
 
     useEffect(()=>{
