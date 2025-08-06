@@ -6,7 +6,7 @@ import { delay, motion } from "motion/react"
 
 const BuyCredit = () => {
 
-  const {user} =useContext(AppContext);
+  const {user,checkout} =useContext(AppContext);
 
   return (
     <motion.div className='min-h-[80vh] text-center pt-14 mb-10'
@@ -27,7 +27,7 @@ const BuyCredit = () => {
             <p className='mt-6'>
               <span className='text-3xl 
               font-medium'>${item.price}</span> / {item.credits} credits</p>
-            <button className='mt-6 bg-zinc-600 text-white rounded-full p-4 w-full'>
+            <button onClick={checkout} className='mt-6 bg-zinc-600 text-white rounded-full p-4 w-full'>
               {user ? 'Purchase' : 'Get Started'}</button>
           </div>
         ))}

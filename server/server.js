@@ -4,7 +4,7 @@ import "dotenv/config";
 import connectDB from "./config/mongodb.js";
 import userRouter from "./routes/userRoutes.js";
 import imageRouter from "./routes/imageRoutes.js";
-//import stripeRouter from "./routes/stripeRoutes.js";
+import stripeRouter from "./routes/stripeRoutes.js";
 const PORT = process.env.PORT || 4000;
 const app = express();
 
@@ -22,7 +22,7 @@ await connectDB();
 
 app.use("/api/user", userRouter);
 app.use("/api/image", imageRouter);
-//app.use("/api/stripe", stripeRouter);
+app.use("/api/stripe", stripeRouter);
 
 app.get("/", (req, res) => {
   res.send("Hello from server");

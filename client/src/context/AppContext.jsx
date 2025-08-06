@@ -51,6 +51,9 @@ const AppContextProvider = (props)=>{
         setToken('');
         setUser(null);
     }
+    const checkout=async ()=>{
+        await axios.post(backendUrl+'/api/stripe/checkout');
+    }
 
     useEffect(()=>{
         if(token){
@@ -61,7 +64,7 @@ const AppContextProvider = (props)=>{
     const value={
         user,setUser,showLogin,setShowLogin,
         backendUrl,setToken,credit,setCredit,
-        loadCreditsData,logout,generateImage
+        loadCreditsData,logout,generateImage,checkout
     }
     return(
         <AppContext.Provider value={value}>
