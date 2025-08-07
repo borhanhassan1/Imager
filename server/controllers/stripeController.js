@@ -1,45 +1,43 @@
 import Stripe from "stripe";
-import bodyParser from "body-parser";
 import userModel from "../models/userModel.js";
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
 
 const stripeWebHook = async (req, res) => {
-  bodyParser.raw({ type: "application/json" }),
-    async (req, res) => {
-      const sig = req.headers["stripe-signature"];
-      const endpointSecret = "whsec_dBQbrYYjeOR4w3TGv1kd3GpbSVTGUdTK";
+  const sig = req.headers["stripe-signature"];
+  const endpointSecret = "whsec_dBQbrYYjeOR4w3TGv1kd3GpbSVTGUdTK";
 
-      let event;
-      try {
-        event = stripe.webhooks.constructEvent(req.body, sig, endpointSecret);
-      } catch (err) {
-        console.error("❌ Webhook Error:", err.message);
-        return res.status(400).send(`Webhook Error: ${err.message}`);
+  let event;
+  try {
+    event = stripe.webhooks.constructEvent(req.body, sig, endpointSecret);
+  } catch (err) {
+    console.error("❌ Webhook Error:", err.message);
+    return res.status(400).send(`Webhook Error: ${err.message}`);
+  }
+
+  // Handle successful payment
+  if (event.type === "checkout.session.completed") {
+    const session = event.data.object;
+    const userId = session.client_reference_id;
+    const creditsToAdd = parseInt(session.metadata?.credits || "0");
+
+    try {
+      const user = await userModel.findById(userId);
+      if (!user) {
+        console.error("❌ User not found for ID:", userId);
+        return res.status(404).json({ error: "User not found" });
       }
 
-      if (event.type === "checkout.session.completed") {
-        const userId = session.client_reference_id;
-        const creditsToAdd = parseInt(session.metadata.credits);
+      user.creditBalance += creditsToAdd;
+      await user.save();
 
-        try {
-          const user = await userModel.findById(userId);
-          if (!user) {
-            console.error("❌ User not found for ID:", userId);
-            return res.status(404).json({ error: "User not found" });
-          }
+      console.log(`✅ ${creditsToAdd} credits added to user ${user.email}`);
+    } catch (err) {
+      console.error("❌ Error updating user credits:", err);
+      return res.status(500).json({ error: "Database update failed" });
+    }
+  }
 
-          user.creditBalance += creditsToAdd;
-          await user.save();
-
-          console.log(`✅ ${creditsToAdd} credits added to user ${user.email}`);
-        } catch (err) {
-          console.error("❌ Error updating user credits:", err);
-          return res.status(500).json({ error: "Database update failed" });
-        }
-      }
-
-      res.json({ received: true });
-    };
+  res.json({ received: true });
 };
 
 const stripeCheckout = async (req, res) => {
