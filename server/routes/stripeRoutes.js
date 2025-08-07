@@ -8,7 +8,7 @@ import bodyParser from "body-parser";
 
 const stripeRouter = express.Router();
 
-stripeRouter.post("/checkout", userAuth, stripeCheckout);
+stripeRouter.post("/checkout",express.json(), userAuth, stripeCheckout);
 stripeRouter.post(
   "/webhook",
    express.raw({ type: 'application/json' }),
