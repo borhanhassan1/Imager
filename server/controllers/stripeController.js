@@ -1,6 +1,6 @@
 import Stripe from "stripe";
 import bodyParser from "body-parser";
-import userModel from "../models/userModel";
+import userModel from "../models/userModel.js";
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
 
 const stripeWebHook = async (req, res) => {
@@ -47,9 +47,9 @@ const stripeCheckout = async (req, res) => {
     const { plan, userId } = req.body;
 
     const plans = {
-      basic: { amount: 1000, credits: 100, name: "Basic Plan" },
-      advanced: { amount: 5000, credits: 500, name: "Advanced Plan" },
-      business: { amount: 25000, credits: 5000, name: "Business Plan" },
+      Basic: { amount: 1000, credits: 100, name: "Basic Plan" },
+      Advanced: { amount: 5000, credits: 500, name: "Advanced Plan" },
+      Business: { amount: 25000, credits: 5000, name: "Business Plan" },
     };
 
     const selected = plans[plan];
