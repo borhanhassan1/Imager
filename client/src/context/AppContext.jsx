@@ -51,8 +51,8 @@ const AppContextProvider = (props)=>{
         setToken('');
         setUser(null);
     }
-    const checkout=async ()=>{
-        const {data}=await axios.post(backendUrl+'/api/stripe/checkout');
+    const checkout=async (plan)=>{
+        const {data}=await axios.post(backendUrl+'/api/stripe/checkout',{plan},{headers:{token}});
          window.location.href = data.url;
     }
 
