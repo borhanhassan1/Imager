@@ -11,6 +11,7 @@ const stripeRouter = express.Router();
 stripeRouter.post("/checkout", userAuth, stripeCheckout);
 stripeRouter.post(
   "/webhook",
+   express.raw({ type: 'application/json' }),
   stripeWebHook
 );
 export default stripeRouter;
