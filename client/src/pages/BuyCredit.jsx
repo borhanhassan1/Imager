@@ -27,7 +27,7 @@ const BuyCredit = () => {
             <p className='mt-6'>
               <span className='text-3xl 
               font-medium'>${item.price}</span> / {item.credits} credits</p>
-            <button onClick={checkout} className='mt-6 bg-zinc-600 text-white rounded-full p-4 w-full'>
+            <button onClick={()=>checkout(item.id)} className='mt-6 bg-zinc-600 text-white rounded-full p-4 w-full'>
               {user ? 'Purchase' : 'Get Started'}</button>
           </div>
         ))}
