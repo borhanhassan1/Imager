@@ -1,8 +1,7 @@
 import Stripe from "stripe";
-const stripe = new Stripe(
-  "sk_test_51RsrD4JYOW6ad8gIpYU9oxhMRlo1KWqgeOGGxURmLqePJlmN9wPOsJhm2go4bIXTGPOMqVhqx4lNN4TOrk57KiVA00YkrDdaNb"
-);
 import bodyParser from "body-parser";
+import userModel from "../models/userModel";
+const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
 
 const stripeWebHook = async (req, res) => {
   bodyParser.raw({ type: "application/json" }),
@@ -19,10 +18,24 @@ const stripeWebHook = async (req, res) => {
       }
 
       if (event.type === "checkout.session.completed") {
-        const session = event.data.object;
+        const userId = session.client_reference_id;
+        const creditsToAdd = parseInt(session.metadata.credits);
 
-        console.log("✅ Payment succeeded for session:", session.id);
-        console.log(session.amount_total);
+        try {
+          const user = await userModel.findById(userId);
+          if (!user) {
+            console.error("❌ User not found for ID:", userId);
+            return res.status(404).json({ error: "User not found" });
+          }
+
+          user.creditBalance += creditsToAdd;
+          await user.save();
+
+          console.log(`✅ ${creditsToAdd} credits added to user ${user.email}`);
+        } catch (err) {
+          console.error("❌ Error updating user credits:", err);
+          return res.status(500).json({ error: "Database update failed" });
+        }
       }
 
       res.json({ received: true });
@@ -31,21 +44,35 @@ const stripeWebHook = async (req, res) => {
 
 const stripeCheckout = async (req, res) => {
   try {
+    const { plan, userId } = req.body;
+
+    const plans = {
+      basic: { amount: 1000, credits: 100, name: "Basic Plan" },
+      advanced: { amount: 5000, credits: 500, name: "Advanced Plan" },
+      business: { amount: 25000, credits: 5000, name: "Business Plan" },
+    };
+
+    const selected = plans[plan];
+    if (!selected)
+      return res.status(400).json({ error: "Invalid plan selected." });
+
     const session = await stripe.checkout.sessions.create({
       payment_method_types: ["card"],
       line_items: [
         {
           price_data: {
             currency: "usd",
-            product_data: { name: "Sample Product" },
-            unit_amount: 1000,
+            product_data: { name: selected.name },
+            unit_amount: selected.amount,
           },
-          quantity: 100,
+          quantity: 1,
         },
       ],
       mode: "payment",
-      success_url: "hhttps://imager1.vercel.app",
+      success_url: "https://imager1.vercel.app",
       cancel_url: "https://imager1.vercel.app/result",
+      client_reference_id: userId,
+      metadata: { credits: selected.credits },
     });
 
     res.json({ url: session.url });
@@ -53,4 +80,5 @@ const stripeCheckout = async (req, res) => {
     res.status(500).json({ error: error.message });
   }
 };
+
 export { stripeWebHook, stripeCheckout };
